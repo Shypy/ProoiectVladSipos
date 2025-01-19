@@ -12,6 +12,9 @@
             Title="Credits"
             ContentTemplate="{DataTemplate local:MainPage}"
              />
+        <ShellContent 
+            Title="Credits"
+            ContentTemplate="{DataTemplate local:CreditsPage}" />
         <ShellContent
             Title="About"
             ContentTemplate="{DataTemplate local:AboutPage}"

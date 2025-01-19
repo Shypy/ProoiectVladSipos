@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProoiectVladSipos.CreditDetailPage"
+             Title="Credit Details">
+    <StackLayout Padding="10" Spacing="10">
+        <Label Text="Edit Credit Details"
+               FontSize="Large"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <Entry Placeholder="Loaned Amount"
+               Keyboard="Numeric"
+               Text="{Binding LoanedAmount}" />
+
+        <Entry Placeholder="Annual Interest (%)"
+               Keyboard="Numeric"
+               Text="{Binding AnualInterest}" />
+
+        <Entry Placeholder="Loan Duration (Months)"
+               Keyboard="Numeric"
+               Text="{Binding LoanMonths}" />
+
+        <DatePicker Date="{Binding Date}" />
+
+        <Grid ColumnDefinitions="*,*">
+            <Button Text="Save"
+                    Grid.Column="0"
+                    Clicked="OnSaveButtonClicked" />
+            <Button Text="Delete"
+                    Grid.Column="1"
+                    Clicked="OnDeleteButtonClicked"
+                    IsVisible="{Binding ID, Converter={StaticResource IdToVisibilityConverter}}" />
+        </Grid>
+    </StackLayout>
+</ContentPage>
