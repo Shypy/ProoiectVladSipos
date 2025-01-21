@@ -21,7 +21,7 @@
                   Margin="10">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding LoanedAmount}"
+                    <TextCell Text="{Binding LoanedAmount, Converter={StaticResource EuroSymbolConverter}}"
                               Detail="{Binding Date}" />
                 </DataTemplate>
             </ListView.ItemTemplate>

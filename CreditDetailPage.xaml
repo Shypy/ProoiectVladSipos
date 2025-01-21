@@ -4,23 +4,25 @@
              x:Class="ProoiectVladSipos.CreditDetailPage"
              Title="Credit Details">
     <StackLayout Padding="10" Spacing="10">
-        <Label Text="Edit Credit Details"
+        <Label Text="Credit Details"
                FontSize="Large"
                FontAttributes="Bold"
                HorizontalOptions="Center" />
 
-        <Entry Placeholder="Loaned Amount"
-               Keyboard="Numeric"
-               Text="{Binding LoanedAmount}" />
+        <Label Text="Loaned Amount (€):" FontAttributes="Bold" />
+        <Entry Keyboard="Numeric"
+               Text="{Binding LoanedAmount, Converter={StaticResource EuroSymbolConverter}}" />
 
-        <Entry Placeholder="Annual Interest (%)"
-               Keyboard="Numeric"
-               Text="{Binding AnualInterest}" />
+        <Label Text="Annual Interest (%)" FontAttributes="Bold" />
+        <Entry Keyboard="Numeric"
+               Text="{Binding AnualInterest}" 
+               IsVisible="{Binding }"/>
 
-        <Entry Placeholder="Loan Duration (Months)"
-               Keyboard="Numeric"
+        <Label Text="Loan Duration (Months)" FontAttributes="Bold" />
+        <Entry Keyboard="Numeric"
                Text="{Binding LoanMonths}" />
 
+        <Label Text="Date" FontAttributes="Bold" />
         <DatePicker Date="{Binding Date}" />
 
         <Grid ColumnDefinitions="*,*">
