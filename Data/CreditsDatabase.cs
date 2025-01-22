@@ -141,9 +141,24 @@ namespace ProoiectVladSipos.Data
             }
         }
 
-        public Task<int> DeleteLoanTypeAsync(LoanType loanType)
+        public async Task<int> DeleteLoanTypeAsync(LoanType loanType)
         {
-            return _database.DeleteAsync(loanType);
+            // Verificăm dacă există credite pentru acest LoanType
+            int associatedCreditsCount = await _database.Table<Credits>()
+                .Where(c => c.LoanTypeID == loanType.ID)
+                .CountAsync();
+
+            if (associatedCreditsCount > 0)
+            {
+                // Aruncăm excepție – UI-ul o va prinde și va afișa un mesaj
+                throw new InvalidOperationException(
+                    "Cannot delete this LoanType because it is referenced by existing Credits."
+                );
+            }
+
+            // Dacă nu există, putem șterge liniștiți
+            return await _database.DeleteAsync(loanType);
         }
+
     }
 }

@@ -32,8 +32,21 @@ namespace ProoiectVladSipos.Views
 
             if (confirm && loanType.ID != 0)
             {
-                await App.Database.DeleteLoanTypeAsync(loanType);
-                await Navigation.PopAsync();
+                try
+                {
+                    await App.Database.DeleteLoanTypeAsync(loanType);
+                    await Navigation.PopAsync();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Afișăm un mesaj prietenos utilizatorului
+                    await DisplayAlert("Cannot Delete", ex.Message, "OK");
+                }
+                catch (Exception ex)
+                {
+                    // Alte tipuri de excepții
+                    await DisplayAlert("Error", $"Unexpected error: {ex.Message}", "OK");
+                }
             }
         }
     }

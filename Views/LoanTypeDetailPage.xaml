@@ -12,7 +12,7 @@
                HorizontalOptions="Center" />
 
         <Label Text="Name:" FontAttributes="Bold" />
-        <Entry Text="{Binding Name}" Placeholder="Ex: Ipotecar..." />
+        <Entry Text="{Binding Name}" Placeholder="Ex: House..." />
 
         <Label Text="Default Interest (%):" FontAttributes="Bold" />
         <Entry Text="{Binding DefaultInterest}" Keyboard="Numeric" />
