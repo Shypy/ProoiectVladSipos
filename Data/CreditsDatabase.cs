@@ -108,10 +108,26 @@ namespace ProoiectVladSipos.Data
             }
         }
 
-        public Task<int> DeleteUserAsync(User user)
+        public async Task<int> DeleteUserAsync(User user)
         {
-            return _database.DeleteAsync(user);
+            // 1. Obținem toate creditele asociate acestui user
+            var userCredits = await _database.Table<Credits>()
+                                             .Where(c => c.UserID == user.ID)
+                                             .ToListAsync();
+
+            // 2. Dacă există credite, le ștergem pe toate
+            if (userCredits.Any())
+            {
+                foreach (var credit in userCredits)
+                {
+                    await _database.DeleteAsync(credit);
+                }
+            }
+
+            // 3. În final, ștergem și userul
+            return await _database.DeleteAsync(user);
         }
+
 
         // ----------------------------------
         // Operații CRUD pentru LoanType

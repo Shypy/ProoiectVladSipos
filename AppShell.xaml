@@ -19,7 +19,7 @@
             ContentTemplate="{DataTemplate views:UsersPage}" />
 
         <ShellContent 
-            Title="Credits"
+            Title="Loans"
             ContentTemplate="{DataTemplate views:CreditsPage}" />
         
         <ShellContent 

@@ -1,4 +1,4 @@
-using ProoiectVladSipos.Models;
+﻿using ProoiectVladSipos.Models;
 using System;
 
 namespace ProoiectVladSipos.Views;
@@ -23,14 +23,20 @@ public partial class UserDetailPage : ContentPage
         var user = (User)BindingContext;
         if (user.ID != 0)
         {
-            bool confirm = await DisplayAlert("Confirm Delete",
-                                              "Are you sure you want to delete this user?",
-                                              "Yes", "No");
+            // Afișează un mesaj de confirmare
+            bool confirm = await DisplayAlert(
+                "Confirm Delete",
+                "Are you sure you want to delete this user and all their credits?",
+                "Yes", "No"
+            );
+
             if (confirm)
             {
+                // Apelează metoda nouă din baza de date
                 await App.Database.DeleteUserAsync(user);
                 await Navigation.PopAsync();
             }
         }
     }
+
 }
