@@ -54,6 +54,16 @@ namespace ProoiectVladSipos.Views
             {
                 LoanTypePicker.SelectedIndexChanged += OnLoanTypePickerChanged;
             }
+
+            if (credit.ID != 0)
+            {
+                UserPicker.IsEnabled = false;
+            }
+            else
+            {
+                // Dacă user-ul nu e setat încă (credit nou), îl lași editabil
+                UserPicker.IsEnabled = true;
+            }
         }
 
         private void OnLoanTypePickerChanged(object sender, EventArgs e)

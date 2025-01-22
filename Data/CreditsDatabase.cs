@@ -243,6 +243,5 @@ namespace ProoiectVladSipos.Data
                                   .ToListAsync();
         }
 
-
     }
 }
