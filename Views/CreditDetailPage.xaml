@@ -46,5 +46,8 @@
                     Clicked="OnDeleteButtonClicked"
                     IsVisible="{Binding ID, Converter={StaticResource IdToVisibilityConverter}}" />
         </Grid>
+        <Button Text="Show Repayment Plan"
+                Clicked="OnRepaymentPlanClicked" 
+                IsVisible="{Binding ID, Converter={StaticResource IdToVisibilityConverter}}" />
     </StackLayout>
 </ContentPage>

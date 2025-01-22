@@ -67,6 +67,10 @@ namespace ProoiectVladSipos.Views
             {
                 credit.AnualInterest = selectedType.DefaultInterest;
                 credit.LoanMonths = selectedType.DefaultDurationMonths;
+
+                var temp = credit;
+                BindingContext = null;
+                BindingContext = temp;
             }
         }
 
@@ -128,5 +132,17 @@ namespace ProoiectVladSipos.Views
                 }
             }
         }
+        private async void OnRepaymentPlanClicked(object sender, EventArgs e)
+        {
+            var credit = BindingContext as Credits;
+            if (credit == null) return;
+
+            // 1. Generează planul și salvează în DB
+            await App.Database.GenerateRepaymentPlanAsync(credit);
+
+            // 2. Navighează la pagina ce afișează planul
+            await Navigation.PushAsync(new RepaymentPlanPage(credit.ID));
+        }
+
     }
 }

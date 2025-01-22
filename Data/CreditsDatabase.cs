@@ -17,41 +17,7 @@ namespace ProoiectVladSipos.Data
             _database.CreateTableAsync<Credits>().Wait();
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<LoanType>().Wait();
-
-            // Inițializare (seed) tipuri de credit
-            //SeedLoanTypesAsync().Wait();
-        }
-
-        // Metodă de seed pentru LoanType
-        private async Task SeedLoanTypesAsync()
-        {
-            var count =1;
-            try
-            {
-                 count = await _database.Table<LoanType>().CountAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            if (count == 0)
-                {
-                    var loanTypes = new List<LoanType>
-                    {
-                        new LoanType { Name = "Ipotecar", DefaultInterest = 5m, DefaultDurationMonths = 360 },
-                        new LoanType { Name = "Nevoi Personale", DefaultInterest = 10m, DefaultDurationMonths = 60 },
-                        new LoanType { Name = "Credit Mașină", DefaultInterest = 7m, DefaultDurationMonths = 84 }
-                    };
-                try
-                {
-                    await _database.InsertAllAsync(loanTypes);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-
-            }
+            _database.CreateTableAsync<RepaymentPlan>().Wait();
         }
 
         // ----------------------------------
@@ -82,10 +48,17 @@ namespace ProoiectVladSipos.Data
             }
         }
 
-        public Task<int> DeleteCreditAsync(Credits credit)
+        public async Task<int> DeleteCreditAsync(Credits credit)
         {
-            return _database.DeleteAsync(credit);
+            // 1. Șterge toate ratele din RepaymentPlan pentru acest Credit
+            await _database.Table<RepaymentPlan>()
+                           .Where(rp => rp.CreditID == credit.ID)
+                           .DeleteAsync();
+
+            // 2. Șterge creditul propriu-zis
+            return await _database.DeleteAsync(credit);
         }
+
 
         // ----------------------------------
         // Operații CRUD pentru User
@@ -175,6 +148,101 @@ namespace ProoiectVladSipos.Data
             // Dacă nu există, putem șterge liniștiți
             return await _database.DeleteAsync(loanType);
         }
+        public async Task GenerateRepaymentPlanAsync(Credits credit)
+        {
+            // 1. Ștergem planul existent (dacă există)
+            await _database.Table<RepaymentPlan>()
+                           .Where(rp => rp.CreditID == credit.ID)
+                           .DeleteAsync();
+
+            // 2. Calculăm ratele folosind formula clasică
+            //    M = P * i / (1 - (1+i)^(-n))
+            //    unde:
+            //      P = suma împrumutată (LoanedAmount)
+            //      i = dobânda lunară (annualInterest / 12 / 100)
+            //      n = număr de luni (LoanMonths)
+            //    Apoi, pentru fiecare lună:
+            //      interest = sold * i
+            //      principal = M - interest
+            //      sold = sold - principal
+            //    PaymentDate poate fi data creditului + i luni, sau altă logică
+
+            decimal annualRate = credit.AnualInterest / 100; // ex. 10% => 0.10
+            decimal monthlyRate = annualRate / 12;           // ex. 0.10/12 => 0.008333..
+            int totalMonths = credit.LoanMonths;
+            decimal principalAmount = credit.LoanedAmount;
+
+            // Dacă dobânda e 0, e un caz special, dar aici presupunem > 0
+            decimal monthlyPayment = CalculateMonthlyPayment(principalAmount, monthlyRate, totalMonths);
+
+            // soldul curent
+            decimal remainingBalance = principalAmount;
+
+            var repaymentPlans = new List<RepaymentPlan>();
+
+            for (int installment = 1; installment <= totalMonths; installment++)
+            {
+                // Calcul interest/principal pentru luna curentă
+                decimal interest = remainingBalance * monthlyRate;
+                decimal principal = monthlyPayment - interest;
+
+                // În caz de rotunjiri, e posibil să ajustezi ultima rată
+                // Ca exemplu simplu, facem:
+                if (installment == totalMonths)
+                {
+                    // Ca să evităm solduri negative (cauzate de rotunjiri)
+                    principal = remainingBalance;
+                    monthlyPayment = principal + interest;
+                }
+
+                // Actualizăm soldul rămas
+                remainingBalance -= principal;
+
+                // Data scadentă: exemplu = credit.Date + (installment) luni
+                DateTime paymentDate = credit.Date.AddMonths(installment);
+
+                // Formăm obiectul
+                var plan = new RepaymentPlan
+                {
+                    CreditID = credit.ID,
+                    InstallmentNumber = installment,
+                    PaymentAmount = decimal.Round(monthlyPayment, 2),
+                    Principal = decimal.Round(principal, 2),
+                    Interest = decimal.Round(interest, 2),
+                    RemainingBalance = decimal.Round(remainingBalance, 2),
+                    PaymentDate = paymentDate
+                };
+                repaymentPlans.Add(plan);
+            }
+
+            // 3. Inserăm toată lista în DB
+            await _database.InsertAllAsync(repaymentPlans);
+        }
+
+        // Funcție ajutătoare pentru calculul ratei lunare
+        private decimal CalculateMonthlyPayment(decimal principal, decimal monthlyRate, int months)
+        {
+            if (monthlyRate == 0)
+            {
+                // Dobândă 0 => plătește principal/număr de luni
+                return months == 0 ? principal : principal / months;
+            }
+            // Formula: P * i / (1 - (1+i)^(-n))
+            double p = (double)principal;
+            double i = (double)monthlyRate;
+            double n = (double)months;
+
+            double payment = p * i / (1 - Math.Pow(1 + i, -n));
+            return (decimal)payment;
+        }
+        public async Task<List<RepaymentPlan>> GetRepaymentPlanByCreditIdAsync(int creditId)
+        {
+            return await _database.Table<RepaymentPlan>()
+                                  .Where(rp => rp.CreditID == creditId)
+                                  .OrderBy(rp => rp.InstallmentNumber)
+                                  .ToListAsync();
+        }
+
 
     }
 }
