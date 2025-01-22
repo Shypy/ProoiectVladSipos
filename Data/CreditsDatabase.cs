@@ -12,9 +12,8 @@ namespace ProoiectVladSipos.Data
         public CreditsDatabase(string dbPath)
         {
             _database = new SQLiteAsyncConnection(dbPath);
-            // Creăm tabelele necesare
             _database.CreateTableAsync<Credits>().Wait();
-            //_database.CreateTableAsync<User>().Wait();
+            _database.CreateTableAsync<User>().Wait();
             //_database.CreateTableAsync<LoanType>().Wait();
         }
 
@@ -51,8 +50,7 @@ namespace ProoiectVladSipos.Data
             return _database.DeleteAsync(credit);
         }
 
-        // Operații suplimentare pentru utilizatori
-       /*public Task<List<User>> GetUsersAsync()
+       public Task<List<User>> GetUsersAsync()
         {
             return _database.Table<User>().ToListAsync();
         }
@@ -75,7 +73,7 @@ namespace ProoiectVladSipos.Data
         }
 
         // Operații suplimentare pentru tipurile de credite
-        public Task<List<LoanType>> GetLoanTypesAsync()
+        /*public Task<List<LoanType>> GetLoanTypesAsync()
         {
             return _database.Table<LoanType>().ToListAsync();
         }

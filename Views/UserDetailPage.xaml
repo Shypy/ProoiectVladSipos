@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProoiectVladSipos.Views.UserDetailPage"
+             Title="User Details">
+    <StackLayout Padding="10" Spacing="10">
+        <Label Text="User Details"
+               FontSize="Large"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <Label Text="Name:" FontAttributes="Bold" />
+        <Entry Placeholder="Enter Name" Text="{Binding Name}" />
+
+        <Label Text="Email:" FontAttributes="Bold" />
+        <Entry Placeholder="Enter Email" Text="{Binding Email}" />
+
+        <Grid ColumnDefinitions="*,*">
+            <Button Text="Save"
+                    Grid.Column="0"
+                    Clicked="OnSaveButtonClicked" />
+            <Button Text="Delete"
+                    Grid.Column="1"
+                    Clicked="OnDeleteButtonClicked"
+                    IsVisible="{Binding ID, Converter={StaticResource IdToVisibilityConverter}}" />
+        </Grid>
+    </StackLayout>
+</ContentPage>

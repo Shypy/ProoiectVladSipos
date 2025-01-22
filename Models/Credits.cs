@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,9 @@ namespace ProoiectVladSipos.Models
         public decimal AnualInterest {  get; set; }
         public int LoanMonths { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
+        [ForeignKey(typeof(User))]
+        public int UserID { get; set; }
+        [ManyToOne]
+        public User User { get; set; }
     }
 }
