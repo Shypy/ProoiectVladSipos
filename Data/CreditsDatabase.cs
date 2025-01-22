@@ -12,18 +12,57 @@ namespace ProoiectVladSipos.Data
         public CreditsDatabase(string dbPath)
         {
             _database = new SQLiteAsyncConnection(dbPath);
+
+            // Creăm cele trei tabele (dacă nu există deja)
             _database.CreateTableAsync<Credits>().Wait();
             _database.CreateTableAsync<User>().Wait();
-            //_database.CreateTableAsync<LoanType>().Wait();
+            _database.CreateTableAsync<LoanType>().Wait();
+
+            // Inițializare (seed) tipuri de credit
+            //SeedLoanTypesAsync().Wait();
         }
 
-        // Obține toate creditele
+        // Metodă de seed pentru LoanType
+        private async Task SeedLoanTypesAsync()
+        {
+            var count =1;
+            try
+            {
+                 count = await _database.Table<LoanType>().CountAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            if (count == 0)
+                {
+                    var loanTypes = new List<LoanType>
+                    {
+                        new LoanType { Name = "Ipotecar", DefaultInterest = 5m, DefaultDurationMonths = 360 },
+                        new LoanType { Name = "Nevoi Personale", DefaultInterest = 10m, DefaultDurationMonths = 60 },
+                        new LoanType { Name = "Credit Mașină", DefaultInterest = 7m, DefaultDurationMonths = 84 }
+                    };
+                try
+                {
+                    await _database.InsertAllAsync(loanTypes);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+
+            }
+        }
+
+        // ----------------------------------
+        // Operații CRUD pentru Credits
+        // ----------------------------------
+
         public Task<List<Credits>> GetCreditsAsync()
         {
             return _database.Table<Credits>().ToListAsync();
         }
 
-        // Obține un credit după ID
         public Task<Credits> GetCreditByIdAsync(int id)
         {
             return _database.Table<Credits>()
@@ -31,7 +70,6 @@ namespace ProoiectVladSipos.Data
                             .FirstOrDefaultAsync();
         }
 
-        // Salvează un credit (inserează sau actualizează)
         public Task<int> SaveCreditAsync(Credits credit)
         {
             if (credit.ID != 0)
@@ -44,13 +82,16 @@ namespace ProoiectVladSipos.Data
             }
         }
 
-        // Șterge un credit
         public Task<int> DeleteCreditAsync(Credits credit)
         {
             return _database.DeleteAsync(credit);
         }
 
-       public Task<List<User>> GetUsersAsync()
+        // ----------------------------------
+        // Operații CRUD pentru User
+        // ----------------------------------
+
+        public Task<List<User>> GetUsersAsync()
         {
             return _database.Table<User>().ToListAsync();
         }
@@ -72,10 +113,20 @@ namespace ProoiectVladSipos.Data
             return _database.DeleteAsync(user);
         }
 
-        // Operații suplimentare pentru tipurile de credite
-        /*public Task<List<LoanType>> GetLoanTypesAsync()
+        // ----------------------------------
+        // Operații CRUD pentru LoanType
+        // ----------------------------------
+
+        public Task<List<LoanType>> GetLoanTypesAsync()
         {
             return _database.Table<LoanType>().ToListAsync();
+        }
+
+        public Task<LoanType> GetLoanTypeByIdAsync(int id)
+        {
+            return _database.Table<LoanType>()
+                            .Where(lt => lt.ID == id)
+                            .FirstOrDefaultAsync();
         }
 
         public Task<int> SaveLoanTypeAsync(LoanType loanType)
@@ -93,6 +144,6 @@ namespace ProoiectVladSipos.Data
         public Task<int> DeleteLoanTypeAsync(LoanType loanType)
         {
             return _database.DeleteAsync(loanType);
-        }*/
+        }
     }
 }

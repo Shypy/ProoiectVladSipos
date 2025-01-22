@@ -3,22 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProoiectVladSipos.Views.CreditDetailPage"
              Title="Credit Details">
+
     <StackLayout Padding="10" Spacing="10">
         <Label Text="Credit Details"
                FontSize="Large"
                FontAttributes="Bold"
                HorizontalOptions="Center" />
 
+        <!-- Alege Utilizatorul -->
         <Label Text="Select User:" FontAttributes="Bold" />
         <Picker x:Name="UserPicker"
-        Title="Select a User"
-        ItemsSource="{Binding Users}" 
-        ItemDisplayBinding="{Binding Name}" 
-        SelectedItem="{Binding SelectedUser}" />
+                Title="Select a User"
+                ItemDisplayBinding="{Binding Name}" />
+
+        <!-- Alege Tipul de Credit -->
+        <Label Text="Select Loan Type:" FontAttributes="Bold" />
+        <Picker x:Name="LoanTypePicker"
+                Title="Select a Loan Type"
+                ItemDisplayBinding="{Binding Name}" />
 
         <Label Text="Loaned Amount (€):" FontAttributes="Bold" />
         <Entry Keyboard="Numeric"
-               Text="{Binding LoanedAmount, Converter={StaticResource EuroSymbolConverter}}" />
+               Text="{Binding LoanedAmount}" />
 
         <Label Text="Annual Interest (%)" FontAttributes="Bold" />
         <Entry Keyboard="Numeric"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:groupModels="clr-namespace:ProoiectVladSipos.GroupModels"
              x:Class="ProoiectVladSipos.Views.CreditsPage"
              Title="Manage Credits">
 
@@ -15,10 +16,21 @@
                FontAttributes="Bold"
                HorizontalOptions="Center" />
 
+        <!-- ListView cu grouping activat -->
         <ListView x:Name="CreditsListView"
-                  ItemsSource="{Binding Credits}"
+                  IsGroupingEnabled="True"
+                  GroupDisplayBinding="{Binding UserName}"
+                  GroupShortNameBinding="{Binding UserName}"
                   ItemSelected="OnCreditSelected"
                   Margin="10">
+            <!-- Afișarea "headerului" fiecărui grup -->
+            <ListView.GroupHeaderTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding UserName}" />
+                </DataTemplate>
+            </ListView.GroupHeaderTemplate>
+
+            <!-- Afișarea fiecărui element (Credit) dintr-un grup -->
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextCell Text="{Binding LoanedAmount, Converter={StaticResource EuroSymbolConverter}}"

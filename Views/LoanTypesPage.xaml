@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="ProoiectVladSipos.Views.LoanTypesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Loan Types">
+
+    <StackLayout Padding="10" Spacing="10">
+        <Label Text="Loan Types"
+               FontSize="Large"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <ListView x:Name="LoanTypesListView"
+                  ItemsSource="{Binding LoanTypes}"
+                  ItemSelected="OnLoanTypeSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Ca exemplu, afișăm Nume și Dobânda Implicită -->
+                    <TextCell Text="{Binding Name}"
+                              Detail="{Binding DefaultInterest}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Button Text="Add Loan Type"
+                HorizontalOptions="Center"
+                Clicked="OnAddLoanTypeClicked" />
+    </StackLayout>
+</ContentPage>

@@ -12,6 +12,7 @@
         <ShellContent
             Title="Main"
             ContentTemplate="{DataTemplate local:MainPage}" />
+        
         <ShellContent 
             Title="Users"
             Icon="users_icon.png"
@@ -20,6 +21,11 @@
         <ShellContent 
             Title="Credits"
             ContentTemplate="{DataTemplate views:CreditsPage}" />
+        
+        <ShellContent 
+        Title="Loan Types"
+        ContentTemplate="{DataTemplate views:LoanTypesPage}" />
+        
         <ShellContent
             Title="About"
             ContentTemplate="{DataTemplate local:AboutPage}" />
